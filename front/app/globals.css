@@ -1,0 +1,55 @@
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: #f5f6fa; color: #0d0f1a; }
+a    { text-decoration: none; }
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+
+@keyframes fadeUp  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+@keyframes shimmer { 0% { background-position:-400px 0; } 100% { background-position:400px 0; } }
+@keyframes spin    { to { transform:rotate(360deg); } }
+
+.app-shell   { display: flex; min-height: 100vh; }
+.app-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.app-main    { flex: 1; overflow-y: auto; padding: 28px; }
+
+.sidebar         { width: 240px; flex-shrink: 0; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+
+.grid-4   { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3   { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.grid-3-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; }
+.table-wrap { overflow-x: auto; }
+
+@media (max-width: 1024px) {
+  .grid-4   { grid-template-columns: repeat(2, 1fr); }
+  .grid-3   { grid-template-columns: repeat(2, 1fr); }
+  .grid-2-1 { grid-template-columns: 1fr; }
+  .grid-3-2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app-main { padding: 16px; }
+  .grid-4   { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .grid-3   { grid-template-columns: 1fr; }
+  .grid-2   { grid-template-columns: 1fr; }
+  .grid-2-1 { grid-template-columns: 1fr; }
+  .grid-3-2 { grid-template-columns: 1fr; }
+  .sidebar  { position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; transform: translateX(-100%); transition: transform .25s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay { display: block; }
+  .hide-mobile { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .grid-4   { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .app-main { padding: 12px; }
+}
+
+/* Botão fechar sidebar: oculto no desktop, visível no mobile */
+.sidebar-close-btn { display: none; }
+@media (max-width: 768px) {
+  .sidebar-close-btn { display: flex !important; }
+}
