@@ -1,0 +1,57 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: datasight_db
+    environment:
+      POSTGRES_DB: datasight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: datasight_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: datasight
+      PORT: 3001
+      NODE_ENV: development
+      ML_SERVICE_URL: http://ml:8000
+    ports: ["3001:3001"]
+    volumes: ["./backend:/app","//app/node_modules"]
+    command: npm run start:dev
+
+  ml:
+    build: ./ml-service
+    container_name: datasight_ml
+    ports: ["8000:8000"]
+    volumes: ["./ml-service:/app","ml_models:/app/ml/models"]
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    container_name: datasight_frontend
+    depends_on: [backend, ml]
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
+      NEXT_PUBLIC_ML_URL: http://localhost:8000
+    ports: ["3000:3000"]
+    volumes: ["./frontend:/app","//app/node_modules","//app/.next"]
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  ml_models:
